@@ -31,6 +31,22 @@ export class UiParticleBase extends Particle {
   }
 
   /**
+   * Override to return a String defining primary markup for the given slot name.
+   */
+  // getTemplate(slotName: string): string {
+  //   // TODO: only supports a single template for now. add multiple templates support.
+  //   return this.template;
+  // }
+
+  /**
+   * Override to return a String defining the name of the template for the given slot name.
+   */
+  // getTemplateName(slotName: string): string {
+  //   // TODO: only supports a single template for now. add multiple templates support.
+  //   return `default`;
+  // }
+
+  /**
    * Override to return false if the Particle isn't ready to `render()`
    */
   shouldRender(...args): boolean {
@@ -47,10 +63,10 @@ export class UiParticleBase extends Particle {
   // This is the default output 'packet', other implementations (modalities) could
   // output other things, or choose different output packets based on hints from 'model'
   renderModel(model) {
-    const template = this.template;
-    if (template || model) {
-      this.output({template, model});
-    }
+    this.output({
+      template: this.template,
+      model
+    });
   }
 
   /**
@@ -59,6 +75,14 @@ export class UiParticleBase extends Particle {
   render(...args): RenderModel {
     return {};
   }
+
+  // forceRenderTemplate(slotName: string = ''): void {
+  //   this.slotProxiesByName.forEach((slot: SlotProxy, name: string) => {
+  //     if (!slotName || (name === slotName)) {
+  //       slot.requestedContentTypes.add('template');
+  //     }
+  //   });
+  // }
 
   fireEvent(slotName: string, {handler, data}): void {
     if (this[handler]) {
@@ -172,10 +196,15 @@ export class UiParticleBase extends Particle {
    * Return array of Entities dereferenced from array of Share-Type Entities
    */
   async derefShares(shares): Promise<Entity[]> {
-    return this.await(async p => {
+    let entities = [];
+    this.startBusy();
+    try {
       const derefPromises = shares.map(async share => share.ref.dereference());
-      return await Promise.all(derefPromises);
-    });
+      entities = await Promise.all(derefPromises);
+    } finally {
+      this.doneBusy();
+    }
+    return entities;
   }
 
   /**
