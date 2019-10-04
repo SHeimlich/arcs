@@ -9,7 +9,7 @@
  */
 
 import {Entity, EntityClass} from './entity.js';
-import {Handle, BigCollection, Collection, Singleton} from './handle.js';
+import {Handle, Collection, Singleton} from './handle.js';
 import {Particle} from './particle.js';
 
 export interface UiParticleConfig {
@@ -23,21 +23,6 @@ export type RenderModel = object;
  * Particle that can render and process events.
  */
 export class UiParticleBase extends Particle {
-  private currentSlotName: string | undefined;
-
-  /**
-   * Override if necessary, to modify superclass config.
-   */
-  get config(): UiParticleConfig {
-    // TODO(sjmiles): getter that does work is a bad idea, this is temporary
-    return {
-      handleNames: this.spec.inputs.map(i => i.name),
-      // TODO(mmandlis): this.spec needs to be replaced with a particle-spec loaded from
-      // .arcs files, instead of .ptcl ones.
-      slotNames: this.spec.slandleConnectionNames()
-    };
-  }
-
   /**
    * Override to return a template.
    */
@@ -62,10 +47,10 @@ export class UiParticleBase extends Particle {
   // This is the default output 'packet', other implementations (modalities) could
   // output other things, or choose different output packets based on hints from 'model'
   renderModel(model) {
-    this.output({
-      template: this.template,
-      model
-    });
+    const template = this.template;
+    if (template || model) {
+      this.output({template, model});
+    }
   }
 
   /**
