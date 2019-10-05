@@ -1,0 +1,31 @@
+schema Board
+  Text boardJson
+
+schema Move
+  Text cellJson
+
+schema Game
+  Text gameJson
+
+particle ScottTacToeUi in './source/ScottTacToeUI.js'
+  inout Board board
+  out Move move
+  consume root
+
+particle ScottTacToe in './source/ScottTacToe.js'
+  inout Game game
+  inout Board board
+  inout Move move
+
+recipe
+  create as game
+  create as board
+  create #volatile as move
+  ScottTacToeUi
+    board = board
+    move = move
+  ScottTacToe
+    game = game
+    board = board
+    move = move
+  description `ScottTacToe`

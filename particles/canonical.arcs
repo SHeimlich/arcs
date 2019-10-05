@@ -12,6 +12,7 @@ import 'Stardate/Stardate.arcs'
 import 'Demo/Demo.arcs'
 import 'Processing/recipes/ImageClassifier.arcs'
 import 'Magenta/Visualizer.arcs'
+import 'ScottTacToe/ScottTacToe.arcs'
 
 // for ArcMetaShare
 import 'Arcs/schemas/ArcMeta.arcs'
