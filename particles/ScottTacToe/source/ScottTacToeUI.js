@@ -13,10 +13,12 @@ defineParticle(({SimpleParticle, html, log}) => {
   const template = html`
 
 <style>
+  :host {
+    padding: 16px;
+  }
   board {
     display: block;
     width: calc(3*16*4px);
-    padding: 16px;
     box-sizing: border-box;
   }
   row {
@@ -38,6 +40,11 @@ defineParticle(({SimpleParticle, html, log}) => {
   }
 </style>
 
+<div>
+  <button on-click="onResetClick">Reset Game</button>
+</div>
+<br>
+
 <board>{{board}}</board>
 
 <template row><row>{{cells}}</row></template>
@@ -49,13 +56,21 @@ defineParticle(({SimpleParticle, html, log}) => {
     get template() {
       return template;
     }
-    update({board}, state) {
+    update({game, board}, state) {
+      if (game) {
+        state.game = JSON.parse(game.gameJson);
+      }
       if (board) {
         state.board = JSON.parse(board.boardJson);
       }
       if (state.move) {
         this.set('move', {cellJson: JSON.stringify(state.move)});
         state.move = null;
+      }
+      if (state.reset && state.game) {
+        state.reset = false;
+        state.game.reset = true;
+        this.set('game', {gameJson: JSON.stringify(state.game)});
       }
     }
     render(inputs, {board}) {
@@ -81,9 +96,10 @@ defineParticle(({SimpleParticle, html, log}) => {
       };
     }
     onCellClick(eventlet) {
-      this.state = {
-        move: eventlet.data.key
-      };
+      this.state = { move: eventlet.data.key };
+    }
+    onResetClick() {
+      this.state = { reset: true };
     }
   };
 
