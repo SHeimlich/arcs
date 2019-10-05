@@ -40,7 +40,6 @@ export class Particle {
   private _idle: Promise<void> = Promise.resolve();
   private _idleResolver: Runnable;
   private _busy = 0;
-
   protected _handlesToSync: number;
 
   protected slotProxiesByName: Map<string, SlotProxy> = new Map();
