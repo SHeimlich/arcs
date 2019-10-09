@@ -7,27 +7,50 @@ schema Move
 schema Game
   Text gameJson
 
+schema Player
+  Text kind
+
 particle ScottTacToeUi in './source/ScottTacToeUI.js'
   inout Game game
   inout Board board
   out Move move
+  inout Player player1
+  inout Player player2
   consume root
 
 particle ScottTacToe in './source/ScottTacToe.js'
   inout Game game
   inout Board board
   inout Move move
+  inout Player player1
+  inout Player player2
+
+particle HumanPlayer in './source/HumanPlayer.js'
+  inout Player player
+
+particle CpuPlayer in './source/ScottTacToe.js'
+  inout Player player
 
 recipe
+  create as player1
+  create as player2
   create as game
   create as board
   create #volatile as move
-  ScottTacToeUi
-    game = game
-    board = board
-    move = move
+  HumanPlayer
+    player = player1
+  CpuPlayer
+    player = player2
   ScottTacToe
     game = game
     board = board
     move = move
+    player1 = player1
+    player2 = player2
+  ScottTacToeUi
+    game = game
+    board = board
+    move = move
+    player1 = player1
+    player2 = player2
   description `ScottTacToe`

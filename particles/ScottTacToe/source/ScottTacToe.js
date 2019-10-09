@@ -30,7 +30,7 @@ defineParticle(({SimpleParticle}) => {
         }
         const currentPlayer = state.game.turn % 2;
         if (move) {
-          this.set('move', null);
+          this.clear('move');
           state.move = JSON.parse(move.cellJson);
         }
         if (state.board && state.move && currentPlayer === 0) {
