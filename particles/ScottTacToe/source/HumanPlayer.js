@@ -11,10 +11,14 @@
 defineParticle(({SimpleParticle}) => {
 
   return class extends SimpleParticle {
-    update({player}) {
-      if (player && !player.kind) {
-        player.kind = 'human';
-        this.set('player', player);
+    update({player, events}) {
+      if (player && player.row === -1) {
+        const click = events.find(e => e.action === 'click');
+        if (click) {
+          this.remove('events', click);
+          const {row, col} = click;
+          this.set('player', {row, col});
+        }
       }
     }
   };

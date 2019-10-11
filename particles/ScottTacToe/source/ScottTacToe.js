@@ -8,37 +8,45 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-defineParticle(({SimpleParticle}) => {
+defineParticle(({SimpleParticle, log}) => {
 
   return class extends SimpleParticle {
-    update({game, board, move}, state) {
-      if (!game) {
-        this.initGame();
-      } else {
-        state.game = JSON.parse(game.gameJson);
-      }
+    ready() {
+      log('ready!', this.handles);
+      super.ready();
+    }
+    update({game, board, events, player1, player2}, state) {
+      log('update');
       if (!board) {
         this.initBoard();
       } else {
         state.board = JSON.parse(board.boardJson);
       }
-      if (state.game) {
-        if (state.game.reset) {
-          this.initGame();
+      if (!game) {
+        this.initGame();
+        this.nextTurn(0);
+      } else {
+        state.game = JSON.parse(game.gameJson);
+      }
+      if (state.game && events) {
+        const reset = events.find(e => e.action === 'reset');
+        if (reset) {
+          log('resetting');
+          this.clear('events');
           this.initBoard();
+          this.initGame();
+          this.nextTurn(0);
           return;
         }
+      }
+      if (state.game && state.board) {
         const currentPlayer = state.game.turn % 2;
-        if (move) {
-          this.clear('move');
-          state.move = JSON.parse(move.cellJson);
-        }
-        if (state.board && state.move && currentPlayer === 0) {
-          this.applyMove(state.game, state.board, state.move);
-        }
-        state.move = null;
-        if (currentPlayer === 1 && state.game.turn < 9) {
-          this.cpuMove(state.game, state.board);
+        if (currentPlayer === 0 && player1 && player1.row > -1) {
+          this.clear('player1');
+          this.applyMove(state.game, state.board, player1);
+        } else if (currentPlayer === 1 && player2 && player2.row > -1) {
+          this.clear('player2');
+          this.applyMove(state.game, state.board, player2);
         }
       }
     }
@@ -62,17 +70,21 @@ defineParticle(({SimpleParticle}) => {
       if (!cell.value) {
         cell.value = ['X', 'O'][game.turn % 2];
         this.set('board', {boardJson: JSON.stringify(board)});
-        game.turn++;
+        this.nextTurn(++game.turn);
         this.set('game', {gameJson: JSON.stringify(game)});
         return true;
       }
       return false;
     }
-    cpuMove(game, board) {
-      let moveToTry;
-      do {
-        moveToTry = {row: Math.floor(Math.random()*3), col: Math.floor(Math.random()*3)};
-      } while (!this.applyMove(game, board, moveToTry));
+    nextTurn(turn) {
+      const currentPlayer = turn % 2;
+      if (currentPlayer === 0) {
+        this.clear('player2');
+        this.set('player1', {row: -1, col: -1});
+      } else {
+        this.clear('player1');
+        this.set('player2', {row: -1, col: -1});
+      }
     }
   };
 

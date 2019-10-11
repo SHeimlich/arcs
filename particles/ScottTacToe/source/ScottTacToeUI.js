@@ -40,15 +40,21 @@ defineParticle(({SimpleParticle, html, log}) => {
   }
 </style>
 
+
+<template row><row>{{cells}}</row></template>
+<template cell><cell on-click="onCellClick" key="{{key}}">&nbsp;<span>{{value}}</span>&nbsp;</cell></template>
+<board>{{board}}</board>
+<br>
+
+<div>
+  <span>{{player}}</span>'s turn.
+</div>
+<br>
+
 <div>
   <button on-click="onResetClick">Reset Game</button>
 </div>
 <br>
-
-<board>{{board}}</board>
-
-<template row><row>{{cells}}</row></template>
-<template cell><cell on-click="onCellClick" key="{{key}}">&nbsp;<span>{{value}}</span>&nbsp;</cell></template>
 
   `;
 
@@ -67,15 +73,11 @@ defineParticle(({SimpleParticle, html, log}) => {
         this.set('move', {cellJson: JSON.stringify(state.move)});
         state.move = null;
       }
-      if (state.reset && state.game) {
-        state.reset = false;
-        state.game.reset = true;
-        this.set('game', {gameJson: JSON.stringify(state.game)});
-      }
     }
-    render(inputs, {board}) {
+    render(inputs, {board, game}) {
       return {
-        board: board ? this.renderBoard(board) : null
+        board: board ? this.renderBoard(board) : null,
+        player: game ? `Player ${game.turn % 2 + 1}` : `Nobody`
       };
     }
     renderBoard(board) {
@@ -96,10 +98,13 @@ defineParticle(({SimpleParticle, html, log}) => {
       };
     }
     onCellClick(eventlet) {
-      this.state = { move: eventlet.data.key };
+      log('clickEvent');
+      const {row, col} = eventlet.data.key;
+      this.add('events', {action: 'click', row, col});
     }
     onResetClick() {
-      this.state = { reset: true };
+      log('resetEvent');
+      this.add('events', {action: 'reset'});
     }
   };
 

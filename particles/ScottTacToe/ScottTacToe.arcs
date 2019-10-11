@@ -8,12 +8,19 @@ schema Game
   Text gameJson
 
 schema Player
-  Text kind
+  Number row
+  Number col
+
+schema Event
+  Number row
+  Number col
+  Text action
 
 particle ScottTacToeUi in './source/ScottTacToeUI.js'
   inout Game game
   inout Board board
   out Move move
+  out [Event] events
   inout Player player1
   inout Player player2
   consume root
@@ -24,33 +31,70 @@ particle ScottTacToe in './source/ScottTacToe.js'
   inout Move move
   inout Player player1
   inout Player player2
+  inout [Event] events
 
 particle HumanPlayer in './source/HumanPlayer.js'
   inout Player player
+  inout [Event] events
 
-particle CpuPlayer in './source/ScottTacToe.js'
+particle CpuPlayer in './source/CpuPlayer.js'
   inout Player player
+  in Board board
 
-recipe
+recipe ScottTacToePvE
   create as player1
   create as player2
   create as game
   create as board
   create #volatile as move
+  create #volatile as events
   HumanPlayer
     player = player1
+    events = events
   CpuPlayer
     player = player2
+    board = board
   ScottTacToe
     game = game
     board = board
     move = move
+    events = events
     player1 = player1
     player2 = player2
   ScottTacToeUi
     game = game
     board = board
     move = move
+    events = events
     player1 = player1
     player2 = player2
-  description `ScottTacToe`
+  description `ScottTacToe: Player vs Computer`
+
+recipe ScottTacToePvP
+  create as player1
+  create as player2
+  create as game
+  create as board
+  create #volatile as move
+  create #volatile as events
+  HumanPlayer
+    player = player1
+    events = events
+  HumanPlayer
+    player = player2
+    events = events
+  ScottTacToe
+    game = game
+    board = board
+    move = move
+    events = events
+    player1 = player1
+    player2 = player2
+  ScottTacToeUi
+    game = game
+    board = board
+    move = move
+    events = events
+    player1 = player1
+    player2 = player2
+  description `ScottTacToe: Player vs Player`
