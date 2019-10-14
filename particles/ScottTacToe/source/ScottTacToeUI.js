@@ -98,12 +98,12 @@ defineParticle(({SimpleParticle, html, log}) => {
       };
     }
     onCellClick(eventlet) {
-      log('clickEvent');
+      //log('clickEvent');
       const {row, col} = eventlet.data.key;
       this.add('events', {action: 'click', row, col});
     }
     onResetClick() {
-      log('resetEvent');
+      //log('resetEvent');
       this.add('events', {action: 'reset'});
     }
   };

@@ -40,21 +40,14 @@ defineParticle(({SimpleParticle, log}) => {
         }
       }
       if (state.game && state.board) {
-        const currentPlayer = state.game.turn % 2;
-        if (currentPlayer === 0 && player1 && player1.row > -1) {
-          this.clear('player1');
-          this.applyMove(state.game, state.board, player1);
-        } else if (currentPlayer === 1 && player2 && player2.row > -1) {
-          this.clear('player2');
-          this.applyMove(state.game, state.board, player2);
-        }
+        this.updateMove({player1, player2}, state);
       }
     }
     initGame() {
       const initGame = {
         turn: 0
       };
-      this.set('game', {gameJson: JSON.stringify(initGame)});
+      this.saveGame(initGame);
     }
     initBoard() {
       const initBoard = [
@@ -62,19 +55,34 @@ defineParticle(({SimpleParticle, log}) => {
         [{}, {}, {}],
         [{}, {}, {}]
       ];
-      this.set('board', {boardJson: JSON.stringify(initBoard)});
+      this.saveBoard(initBoard);
     }
-    applyMove(game, board, move) {
-      const {row, col} = move;
-      const cell = board[row][col];
-      if (!cell.value) {
-        cell.value = ['X', 'O'][game.turn % 2];
-        this.set('board', {boardJson: JSON.stringify(board)});
-        this.nextTurn(++game.turn);
-        this.set('game', {gameJson: JSON.stringify(game)});
-        return true;
+    updateMove(inputs, {game, board}) {
+      const currentPlayer = game.turn % 2;
+      const player = ['player1', 'player2'][currentPlayer];
+      const avatar = ['X', 'O'][currentPlayer];
+      this.applyMove(inputs, game, board, player, avatar);
+    }
+    applyMove(inputs, game, board, moveHandleName, moveAvatar) {
+      const move = inputs[moveHandleName];
+      if (move && move.row >-1) {
+        this.clear('events');
+        const cell = board[move.row][move.col];
+        if (!cell.value) {
+          cell.value = moveAvatar;
+          this.saveBoard(board);
+          this.nextTurn(++game.turn);
+          this.saveGame(game);
+          return true;
+        }
+        this.set(moveHandleName, {row: -1, col: -1});
       }
-      return false;
+    }
+    saveBoard(board) {
+      this.set('board', {boardJson: JSON.stringify(board)});
+    }
+    saveGame(game) {
+      this.set('game', {gameJson: JSON.stringify(game)});
     }
     nextTurn(turn) {
       const currentPlayer = turn % 2;

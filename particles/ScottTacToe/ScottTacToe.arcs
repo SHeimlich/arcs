@@ -35,7 +35,7 @@ particle ScottTacToe in './source/ScottTacToe.js'
 
 particle HumanPlayer in './source/HumanPlayer.js'
   inout Player player
-  inout [Event] events
+  in [Event] events
 
 particle CpuPlayer in './source/CpuPlayer.js'
   inout Player player
@@ -98,3 +98,32 @@ recipe ScottTacToePvP
     player1 = player1
     player2 = player2
   description `ScottTacToe: Player vs Player`
+
+recipe ScottTacToeEvE
+  create as player1
+  create as player2
+  create as game
+  create as board
+  create #volatile as move
+  create #volatile as events
+  CpuPlayer
+    player = player1
+    board = board
+  CpuPlayer
+    player = player2
+    board = board
+  ScottTacToe
+    game = game
+    board = board
+    move = move
+    events = events
+    player1 = player1
+    player2 = player2
+  ScottTacToeUi
+    game = game
+    board = board
+    move = move
+    events = events
+    player1 = player1
+    player2 = player2
+  description `ScottTacToe: Computer vs Computer`
