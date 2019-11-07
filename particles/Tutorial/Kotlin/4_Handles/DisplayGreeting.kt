@@ -11,16 +11,16 @@ class DisplayGreetingParticle : Particle() {
 
     override fun getTemplate(slotName: String) = "Hello, <span>{{name}}</span>!"
 
-     init {
-         registerHandle("person", person)
-     }
+    init {
+        registerHandle("person", person)
+    }
 
     override fun onHandleUpdate(handle: Handle) {
          this.renderOutput()
     }
 
     override fun populateModel(slotName: String, model: Map<String, Any?>): Map<String, Any?> {
-        val n = person.get()!!.name ?: "Human"
+        val n = person.get()?.name ?: "Human"
         return model + mapOf(
             "name" to n
         )

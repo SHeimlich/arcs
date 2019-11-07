@@ -15,13 +15,13 @@ class GetPersonParticle : Particle() {
         <div slotid="greetingSlot"></div>""".trimIndent()
 
     init {
-      registerHandle("person", person)
+        registerHandle("person", person)
 
-      eventHandler("onNameInputChange") {
-        val p = person.get() ?: GetPerson_Person()
-        p.name = it["value"] ?: "Human"
-        person.set(p)
-      }
+        eventHandler("onNameInputChange") { eventData ->
+            val p = person.get() ?: GetPerson_Person()
+            p.name = eventData["value"] ?: "Human"
+            person.set(p)
+        }
     }
 }
 
