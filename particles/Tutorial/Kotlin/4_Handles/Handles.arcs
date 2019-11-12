@@ -1,6 +1,7 @@
 // Define a schema that allows us to store a person's name 
 schema Person
   name: Text
+  age: Number
 
 // The GetPerson particle allows the user to input their name, then writes
 // the input to the Person handle.

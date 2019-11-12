@@ -11,7 +11,7 @@ import kotlin.native.internal.ExportForCppRuntime
 class DisplayGreetingParticle : Particle() {
     private val person = Singleton { DisplayGreeting_Person() }
 
-    override fun getTemplate(slotName: String) = "Hello, <span>{{name}}</span>!"
+    override fun getTemplate(slotName: String) = "Hello, <span>{{name}}</span><span>{{age}}</span>!"
 
     init {
         registerHandle("person", person)
@@ -24,7 +24,8 @@ class DisplayGreetingParticle : Particle() {
     override fun populateModel(slotName: String, model: Map<String, Any?>): Map<String, Any?> {
         val n = person.get()?.name ?: "Human"
         return model + mapOf(
-            "name" to n
+            "name" to n,
+            "age" to person.get()?.age.toString()
         )
     }
 }

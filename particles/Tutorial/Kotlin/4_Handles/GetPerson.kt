@@ -18,8 +18,10 @@ class GetPersonParticle : Particle() {
         registerHandle("person", person)
 
         eventHandler("onNameInputChange") { eventData ->
-            val p = person.get() ?: GetPerson_Person()
-            p.name = eventData["value"] ?: "Human"
+            val p = GetPerson_Person(
+                name = eventData["value"] ?: "Human",
+                age = 10.0
+            )
             person.set(p)
         }
     }
