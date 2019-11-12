@@ -14,7 +14,7 @@ particle GetPerson in 'GetPerson.wasm'
 // The DisplayGreeting particle, takes the name passed through the Person
 // handle, and displays a greeting.
 particle DisplayGreeting in 'DisplayGreeting.wasm'
-  person: reads Person
+  person: reads Person {name}
   greetingSlot: consumes
 
 recipe HandleRecipe
