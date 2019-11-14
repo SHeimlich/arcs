@@ -18,6 +18,6 @@ recipe RenderSlotsRecipe
     root: consumes
       mySlot: provides childSlot
   ChildParticle
-    render: consumes childSlot
+    render: consumes *
 
   description `Javascript Tutorial 3: Render Slots`
