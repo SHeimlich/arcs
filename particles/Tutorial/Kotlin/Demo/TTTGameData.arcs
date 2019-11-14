@@ -27,7 +27,7 @@ resource HumanDefault
 resource FirstHuman
   start
   [
-    {"name": "Player One", "avatar": "你好"}
+    {"name": "Player One", "avatar": "🚀"}
   ]
 
 resource SecondHuman
