@@ -7,11 +7,11 @@ schema PersonDetails
 
 
 particle CreatePerson in 'createPerson.js'
-  myPerson: writes PersonDetails {name, age}
+  myPerson: writes PersonDetails {name, age, height}
 
 particle Process in 'process.js'
-  inputPerson: reads ~a PersonDetails {name}
-  outputPerson: writes ~a PersonDetails {name, height}
+  inputPerson: reads ~a with {name: Text}
+  outputPerson: writes ~a with {name: Text, height: Number}
 
 particle Display in 'display.js'
   myPerson: reads PersonDetails
