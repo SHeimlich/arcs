@@ -1,0 +1,30 @@
+// Tutorial: TypeVars
+
+schema PersonDetails
+  name: Text
+  age: Number
+  height: Number
+
+
+particle CreatePerson in 'createPerson.js'
+  myPerson: writes PersonDetails {name, age}
+
+particle Process in 'process.js'
+  inputPerson: reads ~a PersonDetails {name}
+  outputPerson: writes ~a PersonDetails {name, height}
+
+particle Display in 'display.js'
+  myPerson: reads PersonDetails
+  root: consumes
+
+recipe CollectionRecipe
+  myPerson: create #playerOne
+  CreatePerson
+    myPerson: writes myPerson
+  Process
+    inputPerson: reads myPerson
+    outputPerson: writes personTwo
+  Display
+    myPerson: reads personTwo   
+
+  description `Javascript Tutorial 7: Type Variables`
