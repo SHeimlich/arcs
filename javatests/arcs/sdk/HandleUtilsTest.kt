@@ -33,6 +33,8 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 private typealias Person = ReadSdkPerson_Person
+private typealias Foo = ReadSdkPerson_Foo
+private typealias CFoo = ReadSdkPerson_CFoo
 
 @RunWith(JUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,6 +54,28 @@ class HandleUtilsTest {
   fun tearDown() {
     RamDisk.clear()
   }
+
+    @Test
+    fun handleUtils_typeingtest() = runBlockingTest {
+        val foo = manager.createSingletonHandle(
+            HandleMode.ReadWrite,
+            READ_WRITE_HANDLE,
+            Foo,
+            STORAGE_KEY_ONE
+        ) as ReadWriteSingletonHandle<Foo>
+
+        val cFoo = manager.createSingletonHandle(
+            HandleMode.ReadWrite,
+            READ_WRITE_HANDLE,
+            cFoo,
+            STORAGE_KEY_TWO
+        ) as ReadWriteSingletonHandle<CFoo>
+
+        foo.store("G'day")
+        cFoo.store(foo.fetch()!!)
+
+        assertWithMessage("Expected txt to equal").that(foo.fetch()?.txt).isEqualTo(cFoo.fetch()?.txt)
+    }
 
   @Test
   fun handleUtils_combineTwoUpdatesTest() = runBlockingTest {
@@ -436,6 +460,11 @@ class HandleUtilsTest {
     private val STORAGE_KEY_TEN = ReferenceModeStorageKey(
       backingKey = RamDiskStorageKey("backing10"),
       storageKey = RamDiskStorageKey("entity10")
+    )
+
+    private val STORAGE_KEY = ReferenceModeStorageKey(
+          backingKey = RamDiskStorageKey("backingFoo"),
+          storageKey = RamDiskStorageKey("entityFoo")
     )
   }
 }

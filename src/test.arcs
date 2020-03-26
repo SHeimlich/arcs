@@ -1,0 +1,12 @@
+// Example manifest file, serving as a test for the schema2kotlin and schema2cpp
+// code generators.
+meta
+  namespace: arcs.golden
+
+particle Gold
+  foo: writes Foo {txt: Text}
+  foo2: writes Foo {txt: Text}
+  cFoo: writes Foo {txt: Text, num: Number}
+  bar: writes Bar {txt: Text}
+  noName: writes {txt:Text}
+  fooBar: writes Foo Bar {txt: Text}

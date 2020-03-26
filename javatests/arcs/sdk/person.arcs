@@ -6,9 +6,15 @@ schema Person
 
 particle ReadSdkPerson in 'arcs.sdk.ReadSdkPerson'
   person: reads Person
+  foo: reads writes Foo {txt: Text}
+  cFoo: reads writes Foo {txt: Text, num: Number}
 
 recipe Person
   recipePerson: create 'recipePerson'
+  recipeFoo: create 'recipeFoo'
+  cFoo: create 'recipeCFoo'
 
   ReadSdkPerson
     person: reads recipePerson
+    foo: reads writes recipeFoo
+    cFoo: reads writes recipeCFoo
