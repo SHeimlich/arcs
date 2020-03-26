@@ -11,18 +11,15 @@
 
 package arcs.sdk
 
-import arcs.core.common.Id
 import arcs.core.entity.ReadWriteCollectionHandle
 import arcs.core.entity.ReadWriteSingletonHandle
 import arcs.core.host.EntityHandleManager
 import arcs.core.host.HandleMode
 import arcs.core.storage.driver.RamDisk
 import arcs.core.storage.driver.RamDiskDriverProvider
-import arcs.core.storage.handle.HandleManager
 import arcs.core.storage.keys.RamDiskStorageKey
 import arcs.core.storage.referencemode.ReferenceModeStorageKey
 import arcs.jvm.util.testutil.TimeImpl
-import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -38,16 +35,19 @@ private typealias CFoo = ReadSdkPerson_CFoo
 
 @RunWith(JUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
 class HandleUtilsTest {
   private lateinit var manager: EntityHandleManager
-  private val idGenerator = Id.Generator.newForTest("session")
 
   @Before
   fun setUp() {
     RamDiskDriverProvider()
     ReferenceModeStorageKey.registerParser()
-    manager = EntityHandleManager(HandleManager(TimeImpl()))
+      manager = EntityHandleManager(
+          "testArc",
+          "testHost",
+          TimeImpl()
+      )
   }
 
   @After
@@ -321,7 +321,7 @@ class HandleUtilsTest {
       handle3,
       handle4,
       handle5
-    ) { e1, e2, e3, e4, e5 ->
+    ) { _, _, _, _, _ ->
       tracking5 += 1
     }
 
@@ -332,7 +332,7 @@ class HandleUtilsTest {
       handle4,
       handle5,
       handle6
-    ) { e1, e2, e3, e4, e5, e6 ->
+    ) { _, _, _, _, _, _ ->
       tracking6 += 1
     }
 
@@ -344,7 +344,7 @@ class HandleUtilsTest {
       handle5,
       handle6,
       handle7
-    ) { e1, e2, e3, e4, e5, e6, e7 ->
+    ) { _, _, _, _, _, _, _ ->
       tracking7 += 1
     }
 
@@ -357,7 +357,7 @@ class HandleUtilsTest {
       handle6,
       handle7,
       handle8
-    ) { e1, e2, e3, e4, e5, e6, e7, e8 ->
+    ) { _, _, _, _, _, _, _, _ ->
       tracking8 += 1
     }
 
@@ -371,7 +371,7 @@ class HandleUtilsTest {
       handle7,
       handle8,
       handle9
-    ) { e1, e2, e3, e4, e5, e6, e7, e8, e9 ->
+    ) { _, _, _, _, _, _, _, _, _ ->
       tracking9 += 1
     }
 
@@ -386,7 +386,7 @@ class HandleUtilsTest {
       handle8,
       handle9,
       handle10
-    ) { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 ->
+    ) { _, _, _, _, _, _, _, _, _, _ ->
       tracking10 += 1
     }
     

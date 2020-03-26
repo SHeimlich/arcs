@@ -1,9 +1,9 @@
 load(
     "//third_party/java/arcs/build_defs:build_defs.bzl",
+    "arcs_kt_android_library",
     "arcs_kt_android_test_suite",
     "arcs_kt_schema",
 )
-load("//tools/build_defs/kotlin:rules.bzl", "kt_android_library")
 
 licenses(["notice"])
 
@@ -26,16 +26,20 @@ arcs_kt_android_test_suite(
         "//java/arcs/core/entity",
         "//java/arcs/core/host",
         "//java/arcs/core/storage",
+        "//java/arcs/core/storage/api",
         "//java/arcs/core/storage/driver",
+        "//java/arcs/core/storage/handle",
         "//java/arcs/core/storage/keys",
         "//java/arcs/core/storage/referencemode",
         "//java/arcs/core/testutil",
         "//java/arcs/core/util",
+        "//java/arcs/jvm/util/testutil",
         "//java/arcs/sdk/android/storage",
         "//java/arcs/sdk/android/storage/service",
         "//java/arcs/sdk/android/storage/service/testutil",
         "//javatests/arcs/core/allocator:allocator-test-util",
         "//javatests/arcs/core/host:particle",
+        "//javatests/arcs/core/host:testhost",
         "//third_party/android/androidx_test/core",
         "//third_party/android/androidx_test/ext/junit",
         "//third_party/android/androidx_test/runner/monitor",
@@ -57,7 +61,7 @@ arcs_kt_schema(
     ],
 )
 
-kt_android_library(
+arcs_kt_android_library(
     name = "services",
     testonly = True,
     srcs = glob(
@@ -68,22 +72,18 @@ kt_android_library(
     ),
     manifest = "AndroidManifest.xml",
     deps = [
-        ":schemas",
-        "//java/arcs/android/crdt",
         "//java/arcs/android/host",
         "//java/arcs/android/sdk/host",
-        "//java/arcs/android/storage",
         "//java/arcs/android/storage/handle",
         "//java/arcs/core/data",
         "//java/arcs/core/host",
-        "//java/arcs/core/storage/api",
         "//java/arcs/core/storage/handle",
-        "//java/arcs/core/testutil",
         "//java/arcs/sdk",
         "//java/arcs/sdk/android/storage",
         "//java/arcs/sdk/android/storage/service/testutil",
         "//javatests/arcs/core/allocator:allocator-test-util",
         "//javatests/arcs/core/host:particle",
+        "//javatests/arcs/core/host:testhost",
         "//third_party/java/androidx/appcompat",
         "//third_party/java/androidx/lifecycle",
         "//third_party/java/robolectric",

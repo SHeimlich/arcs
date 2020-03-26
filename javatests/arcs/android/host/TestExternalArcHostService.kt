@@ -7,22 +7,19 @@ import android.os.IBinder
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import arcs.android.sdk.host.ArcHostHelper
-import arcs.android.storage.handle.AndroidHandleManager
 import arcs.core.allocator.TestingHost
 import arcs.core.data.Capabilities
-import arcs.core.host.EntityHandleManager
 import arcs.core.host.ParticleRegistration
-import arcs.core.storage.handle.Stores
+import arcs.sdk.android.storage.ServiceStoreFactory
 import arcs.sdk.android.storage.service.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 
-open class TestExternalArcHostService(val arcHost: TestingAndroidHost) : Service() {
+abstract class TestExternalArcHostService() : Service() {
+
+    abstract val arcHost: TestingAndroidHost
+
     val arcHostHelper: ArcHostHelper by lazy {
         ArcHostHelper(this, arcHost)
-    }
-
-    init {
-        arcHost.serviceContext = this
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -39,28 +36,25 @@ open class TestExternalArcHostService(val arcHost: TestingAndroidHost) : Service
         override fun getCurrentState(): State = State.CREATED
     }
 
-    open class TestingAndroidHost(vararg particles: ParticleRegistration) : TestingHost(*particles) {
-        lateinit var serviceContext: Context
+    abstract class TestingAndroidHost(
+        serviceContext: Context,
+        vararg particles: ParticleRegistration
+    ) : TestingHost(*particles) {
 
-        private val stores = Stores()
+        override val stores = singletonStores
 
-        override fun entityHandleManager(arcId: String) = EntityHandleManager(
-            AndroidHandleManager(
+        override val activationFactory =  ServiceStoreFactory(
                 serviceContext,
                 FakeLifecycle(),
                 Dispatchers.Default,
-                testConnectionFactory,
-                stores
-            ),
-            arcId,
-            hostId
-        )
+                testConnectionFactory
+            )
 
         override val arcHostContextCapability = testingCapability
     }
 
     companion object {
-        lateinit var testConnectionFactory: ConnectionFactory
+        var testConnectionFactory: ConnectionFactory? = null
         var testingCapability = Capabilities.TiedToRuntime
     }
 }

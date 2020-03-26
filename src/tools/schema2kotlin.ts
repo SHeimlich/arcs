@@ -327,7 +327,7 @@ export class KotlinGenerator implements ClassGenerator {
     const schemaNames = this.node.schema.names.map(n => `SchemaName("${n}")`);
     return `\
 Schema(
-    listOf(${ktUtils.joinWithIndents(schemaNames, 8)}),
+    setOf(${ktUtils.joinWithIndents(schemaNames, 8)}),
     SchemaFields(
         singletons = ${leftPad(ktUtils.mapOf(this.singletonSchemaFields, 30), 8, true)},
         collections = ${leftPad(ktUtils.mapOf(this.collectionSchemaFields, 30), 8, true)}
@@ -419,7 +419,7 @@ ${this.opts.wasm ? `
         override fun deserialize(data: RawEntity) = ${name}().apply { deserialize(data) }` : `
         override fun decode(encoded: ByteArray): ${name}? {
             if (encoded.isEmpty()) return null
-    
+
             val decoder = StringDecoder(encoded)
             val entityId = decoder.decodeText()
             decoder.validate("|")

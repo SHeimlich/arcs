@@ -29,6 +29,7 @@ typealias CollectionStoreOptions<T> = StoreOptions<CollectionData<T>, Collection
 typealias CollectionProxy<T> = StorageProxy<CrdtSet.Data<T>, CrdtSet.IOperation<T>, Set<T>>
 typealias CollectionBase<T> = Handle<CrdtSet.Data<T>, CrdtSet.IOperation<T>, Set<T>>
 
+@Deprecated("Use Handles from arcs.core.host")
 /**
  * Collection Handle implementation for the runtime.
  *
@@ -91,12 +92,15 @@ class CollectionHandle<T : Referencable>(
         log.debug { "Storing: $entity" }
         checkNotClosed()
 
-        @Suppress("GoodTime") // use Instant
-        entity.creationTimestamp = requireNotNull(time).currentTimeMillis
+        if (entity.creationTimestamp == RawEntity.UNINITIALIZED_TIMESTAMP) {
+            @Suppress("GoodTime") // use Instant
+            entity.creationTimestamp = requireNotNull(time).currentTimeMillis
+        }
         require(entity !is RawEntity || schema == null || schema.refinement(entity)) {
             "Invalid entity stored to handle $name (failed refinement)"
         }
-        if (!Ttl.Infinite.equals(ttl)) {
+        if (!Ttl.Infinite.equals(ttl) &&
+                entity.expirationTimestamp == RawEntity.UNINITIALIZED_TIMESTAMP) {
             @Suppress("GoodTime") // use Instant
             entity.expirationTimestamp = ttl.calculateExpiration(time)
         }

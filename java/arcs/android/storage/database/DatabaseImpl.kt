@@ -32,16 +32,11 @@ import arcs.android.crdt.fromProto
 import arcs.android.crdt.toProto
 import arcs.core.common.Referencable
 import arcs.core.crdt.VersionMap
-import arcs.core.data.CollectionType
-import arcs.core.data.EntityType
 import arcs.core.data.FieldName
 import arcs.core.data.FieldType
 import arcs.core.data.PrimitiveType
 import arcs.core.data.RawEntity
 import arcs.core.data.Schema
-import arcs.core.data.SchemaFields
-import arcs.core.data.SchemaName
-import arcs.core.data.SingletonType
 import arcs.core.data.util.ReferencablePrimitive
 import arcs.core.data.util.toReferencable
 import arcs.core.storage.Reference
@@ -51,7 +46,6 @@ import arcs.core.storage.database.Database
 import arcs.core.storage.database.DatabaseClient
 import arcs.core.storage.database.DatabaseData
 import arcs.core.storage.database.DatabasePerformanceStatistics
-import arcs.core.type.Type
 import arcs.core.util.TaggedLog
 import arcs.core.util.guardedBy
 import arcs.core.util.performance.Counters
@@ -727,39 +721,73 @@ class DatabaseImpl(
         }
     }
 
-    override suspend fun getAllStorageKeys(): Map<StorageKey, Type> {
-        val res: MutableMap<StorageKey, Type> = mutableMapOf()
-        readableDatabase
-            .rawQuery(
+    override suspend fun removeExpiredEntities() {
+        // Fix the time before starting the transaction.
+        val nowMillis = JvmTime.currentTimeMillis
+        writableDatabase.transaction {
+            // Find all expired entities.
+            val storageKeyIds = rawQuery(
+                "SELECT storage_key_id FROM entities WHERE expiration_timestamp < ?",
+                arrayOf(nowMillis.toString())
+            ).map { it.getLong(0) }.toSet()
+
+            // Remove field values.
+            delete(
+                TABLE_FIELD_VALUES,
+                "entity_storage_key_id in (?)",
+                arrayOf(storageKeyIds.joinToString())
+            )
+
+            // TODO: remove from collection_entries all references to these entities.
+
+            // Clean up unused values as they can contain sensitive data.
+            // This query will return all field value ids being referenced by collection or 
+            // singleton fields.
+            val usedFieldIdsQuery =
                 """
                     SELECT
-                        storage_keys.storage_key,
-                        storage_keys.data_type
-                    FROM collections
-                    LEFT JOIN storage_keys ON collections.id = storage_keys.value_id
-                """.trimIndent(),
-                emptyArray()
+                        CASE
+                            WHEN fields.is_collection = 0 THEN field_values.value_id
+                            ELSE collection_entries.value_id
+                        END AS field_value_id                        
+                    FROM fields
+                    LEFT JOIN field_values
+                        ON field_values.field_id = fields.id
+                    LEFT JOIN collection_entries
+                        ON fields.is_collection = 1
+                        AND collection_entries.collection_id = field_values.value_id
+                    WHERE fields.type_id = ?
+                """.trimIndent()
+
+            delete(
+                TABLE_NUMBER_PRIMITIVES,
+                "id NOT IN ($usedFieldIdsQuery)",
+                arrayOf(PrimitiveType.Number.ordinal.toString())
             )
-            .forEach {
-                val storageKey = StorageKeyParser.parse(it.getString(0))
-                // TODO: keep track of and return the actual schema type.
-                val eType: Type = EntityType(
-                    Schema(
-                        listOf<SchemaName>(),
-                        SchemaFields(emptyMap(), emptyMap()),
-                        ""
-                    )
-                )
-                val type = when (DataType.values()[it.getInt(1)]) {
-                    DataType.Singleton -> SingletonType(eType)
-                    DataType.Collection -> CollectionType(eType)
-                    else -> throw UnsupportedOperationException(
-                        "Unsupported data type $it.getInt(1)."
-                    )
-                }
-                res[storageKey] = type
-            }
-        return res
+            delete(
+                TABLE_TEXT_PRIMITIVES,
+                "id NOT IN ($usedFieldIdsQuery)",
+                arrayOf(PrimitiveType.Text.ordinal.toString())
+            )
+
+            // Now delete collection_entries for those fields we just cleared.
+            val usedFieldCollectionIdsQuery =
+                """
+                    SELECT collection_id
+                    FROM fields
+                    LEFT JOIN field_values
+                        ON field_values.field_id = fields.id
+                    LEFT JOIN collection_entries
+                        ON fields.is_collection = 1
+                        AND collection_entries.collection_id = field_values.value_id
+                    WHERE fields.is_collection = 1
+                """.trimIndent()
+            delete(
+                TABLE_COLLECTION_ENTRIES,
+                "collection_id NOT IN ($usedFieldCollectionIdsQuery)",
+                arrayOf()
+            )
+        }
     }
 
     @VisibleForTesting

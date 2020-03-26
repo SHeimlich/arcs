@@ -12,8 +12,8 @@ package arcs.android.storage.handle
 
 import android.content.Context
 import androidx.lifecycle.Lifecycle
+import arcs.core.storage.StoreManager
 import arcs.core.storage.handle.HandleManager
-import arcs.core.storage.handle.Stores
 import arcs.jvm.util.JvmTime
 import arcs.sdk.android.storage.ServiceStoreFactory
 import arcs.sdk.android.storage.service.ConnectionFactory
@@ -25,16 +25,17 @@ import kotlin.coroutines.EmptyCoroutineContext
  * [ActivationFactory] with one that generates [ServiceStore] instances that can
  * communication with a running [StorageService].
  */
+@Deprecated("Use arcs.core.host.EntityHandleManager")
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 fun AndroidHandleManager(
     context: Context,
     lifecycle: Lifecycle,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     connectionFactory: ConnectionFactory? = null,
-    stores: Stores = Stores()
+    storeManager: StoreManager = StoreManager()
 ) = HandleManager(
     JvmTime,
-    stores,
+    storeManager,
     ServiceStoreFactory(
         context,
         lifecycle,

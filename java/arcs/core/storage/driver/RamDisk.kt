@@ -11,11 +11,6 @@
 
 package arcs.core.storage.driver
 
-import arcs.core.data.CollectionType
-import arcs.core.data.EntityType
-import arcs.core.data.Schema
-import arcs.core.data.SchemaFields
-import arcs.core.data.SchemaName
 import arcs.core.storage.Driver
 import arcs.core.storage.DriverFactory
 import arcs.core.storage.DriverProvider
@@ -49,18 +44,6 @@ class RamDiskDriverProvider : DriverProvider {
             "This provider does not support StorageKey: $storageKey"
         }
         return VolatileDriver(storageKey, type, RamDisk.memory)
-    }
-
-    override suspend fun getAllStorageKeys(): Map<StorageKey, Type> {
-        // TODO: keep track of and return the actual schema type.
-        val type = EntityType(
-            Schema(
-                listOf<SchemaName>(),
-                SchemaFields(emptyMap(), emptyMap()),
-                ""
-            )
-        )
-        return RamDisk.memory.keys().map { it to CollectionType(type) }.toMap()
     }
 
     /*

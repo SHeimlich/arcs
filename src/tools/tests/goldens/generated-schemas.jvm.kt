@@ -35,7 +35,7 @@ class GoldInternal1(
     companion object : EntitySpec<GoldInternal1> {
 
         override val SCHEMA = Schema(
-            listOf(),
+            setOf(),
             SchemaFields(
                 singletons = mapOf("val" to FieldType.Text),
                 collections = emptyMap()
@@ -55,6 +55,98 @@ class GoldInternal1(
 
 typealias Gold_Data_Ref = GoldInternal1
 typealias Gold_Alias = GoldInternal1
+
+@Suppress("UNCHECKED_CAST")
+class Gold_AllPeople(
+    name: String = "",
+    age: Double = 0.0,
+    lastCall: Double = 0.0,
+    address: String = "",
+    favoriteColor: String = "",
+    birthDayMonth: Double = 0.0,
+    birthDayDOM: Double = 0.0
+) : EntityBase("Gold_AllPeople", SCHEMA) {
+
+    var name: String
+        get() = super.getSingletonValue("name") as String? ?: ""
+        private set(_value) = super.setSingletonValue("name", _value)
+    var age: Double
+        get() = super.getSingletonValue("age") as Double? ?: 0.0
+        private set(_value) = super.setSingletonValue("age", _value)
+    var lastCall: Double
+        get() = super.getSingletonValue("lastCall") as Double? ?: 0.0
+        private set(_value) = super.setSingletonValue("lastCall", _value)
+    var address: String
+        get() = super.getSingletonValue("address") as String? ?: ""
+        private set(_value) = super.setSingletonValue("address", _value)
+    var favoriteColor: String
+        get() = super.getSingletonValue("favoriteColor") as String? ?: ""
+        private set(_value) = super.setSingletonValue("favoriteColor", _value)
+    var birthDayMonth: Double
+        get() = super.getSingletonValue("birthDayMonth") as Double? ?: 0.0
+        private set(_value) = super.setSingletonValue("birthDayMonth", _value)
+    var birthDayDOM: Double
+        get() = super.getSingletonValue("birthDayDOM") as Double? ?: 0.0
+        private set(_value) = super.setSingletonValue("birthDayDOM", _value)
+
+    init {
+        this.name = name
+        this.age = age
+        this.lastCall = lastCall
+        this.address = address
+        this.favoriteColor = favoriteColor
+        this.birthDayMonth = birthDayMonth
+        this.birthDayDOM = birthDayDOM
+    }
+
+    fun copy(
+        name: String = this.name,
+        age: Double = this.age,
+        lastCall: Double = this.lastCall,
+        address: String = this.address,
+        favoriteColor: String = this.favoriteColor,
+        birthDayMonth: Double = this.birthDayMonth,
+        birthDayDOM: Double = this.birthDayDOM
+    ) = Gold_AllPeople(
+        name = name,
+        age = age,
+        lastCall = lastCall,
+        address = address,
+        favoriteColor = favoriteColor,
+        birthDayMonth = birthDayMonth,
+        birthDayDOM = birthDayDOM
+    )
+
+
+    companion object : EntitySpec<Gold_AllPeople> {
+
+        override val SCHEMA = Schema(
+            setOf(SchemaName("People")),
+            SchemaFields(
+                singletons = mapOf(
+                    "name" to FieldType.Text,
+                    "age" to FieldType.Number,
+                    "lastCall" to FieldType.Number,
+                    "address" to FieldType.Text,
+                    "favoriteColor" to FieldType.Text,
+                    "birthDayMonth" to FieldType.Number,
+                    "birthDayDOM" to FieldType.Number
+                ),
+                collections = emptyMap()
+            ),
+            "ccd14452cc01e1b00b94cdb25bfe34a5a632daaa",
+            refinement = { _ -> true },
+            query = null
+        )
+
+        init {
+            SchemaRegistry.register(this)
+        }
+
+        override fun deserialize(data: RawEntity) = Gold_AllPeople().apply { deserialize(data) }
+    }
+}
+
 
 @Suppress("UNCHECKED_CAST")
 class Gold_QCollection(
@@ -121,7 +213,7 @@ class Gold_QCollection(
     companion object : EntitySpec<Gold_QCollection> {
 
         override val SCHEMA = Schema(
-            listOf(SchemaName("People")),
+            setOf(SchemaName("People")),
             SchemaFields(
                 singletons = mapOf(
                     "name" to FieldType.Text,
@@ -172,7 +264,7 @@ class Gold_Collection(
     companion object : EntitySpec<Gold_Collection> {
 
         override val SCHEMA = Schema(
-            listOf(),
+            setOf(),
             SchemaFields(
                 singletons = mapOf("num" to FieldType.Number),
                 collections = emptyMap()
@@ -236,7 +328,7 @@ class Gold_Data(
     companion object : EntitySpec<Gold_Data> {
 
         override val SCHEMA = Schema(
-            listOf(),
+            setOf(),
             SchemaFields(
                 singletons = mapOf(
                     "num" to FieldType.Number,
@@ -269,12 +361,14 @@ abstract class AbstractGold : BaseParticle() {
         "Gold",
         mapOf(
             "data" to Gold_Data,
+            "allPeople" to Gold_AllPeople,
             "qCollection" to Gold_QCollection,
             "alias" to Gold_Alias,
             "collection" to Gold_Collection
         )
     ) {
         val data: ReadSingletonHandle<Gold_Data> by handles
+        val allPeople: ReadCollectionHandle<Gold_AllPeople> by handles
         val qCollection: ReadQueryCollectionHandle<Gold_QCollection, String> by handles
         val alias: WriteSingletonHandle<Gold_Alias> by handles
         val collection: ReadCollectionHandle<Gold_Collection> by handles

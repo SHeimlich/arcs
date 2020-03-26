@@ -35,6 +35,7 @@ typealias SingletonStoreOptions<T> = StoreOptions<SingletonData<T>, SingletonOp<
  * It provides methods that can generate the appropriate operations to send to a
  * backing [StorageProxy].
  */
+@Deprecated("Use Handles from arcs.core.host")
 class SingletonHandle<T : Referencable>(
     name: String,
     storageProxy: SingletonProxy<T>,
@@ -63,12 +64,15 @@ class SingletonHandle<T : Referencable>(
         log.debug { "storing $entity" }
         checkNotClosed()
 
-        @Suppress("GoodTime") // use Instant
-        entity.creationTimestamp = requireNotNull(time).currentTimeMillis
+        if (entity.creationTimestamp == RawEntity.UNINITIALIZED_TIMESTAMP) {
+            @Suppress("GoodTime") // use Instant
+            entity.creationTimestamp = requireNotNull(time).currentTimeMillis
+        }
         require(entity !is RawEntity || schema == null || schema.refinement(entity)) {
             "Invalid entity stored to handle $name (failed refinement)"
         }
-        if (!Ttl.Infinite.equals(ttl)) {
+        if (!Ttl.Infinite.equals(ttl) &&
+                entity.expirationTimestamp == RawEntity.UNINITIALIZED_TIMESTAMP) {
             @Suppress("GoodTime") // use Instant
             entity.expirationTimestamp = ttl.calculateExpiration(time)
         }

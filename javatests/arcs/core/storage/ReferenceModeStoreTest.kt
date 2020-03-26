@@ -66,7 +66,7 @@ class ReferenceModeStoreTest {
         )
         baseStore = Store(StoreOptions(testKey, CountType()))
         schema = Schema(
-            listOf(SchemaName("person")),
+            setOf(SchemaName("person")),
             SchemaFields(
                 singletons = mapOf("name" to FieldType.Text, "age" to FieldType.Number),
                 collections = emptyMap()
@@ -693,8 +693,6 @@ class ReferenceModeStoreTest {
             dataClass: KClass<Data>,
             type: Type
         ): Driver<Data> = MockDriver(storageKey)
-
-        override suspend fun getAllStorageKeys(): Map<StorageKey, Type> = mapOf()
     }
 
     private class MockDriver<T : Any>(

@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
-import arcs.android.storage.handle.AndroidHandleManager
 import arcs.core.data.FieldType
 import arcs.core.data.Schema
 import arcs.core.data.SchemaFields
@@ -20,10 +19,14 @@ import arcs.core.entity.ReadWriteCollectionHandle
 import arcs.core.entity.ReadWriteSingletonHandle
 import arcs.core.entity.WriteCollectionHandle
 import arcs.core.entity.WriteSingletonHandle
+import arcs.core.storage.StoreManager
+import arcs.core.storage.api.DriverAndKeyConfigurator
 import arcs.core.storage.driver.RamDisk
 import arcs.core.storage.keys.RamDiskStorageKey
 import arcs.core.storage.referencemode.ReferenceModeStorageKey
 import arcs.core.testutil.assertThrows
+import arcs.jvm.util.testutil.TimeImpl
+import arcs.sdk.android.storage.ServiceStoreFactory
 import arcs.sdk.android.storage.service.testutil.TestConnectionFactory
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CompletableDeferred
@@ -50,7 +53,7 @@ class AndroidEntityHandleManagerTest : LifecycleOwner {
     private lateinit var handleManager: EntityHandleManager
 
     private val schema = Schema(
-        listOf(SchemaName("Person")),
+        setOf(SchemaName("Person")),
         SchemaFields(
             singletons = mapOf(
                 "name" to FieldType.Text,
@@ -73,6 +76,7 @@ class AndroidEntityHandleManagerTest : LifecycleOwner {
     @Before
     fun setUp() {
         RamDisk.clear()
+        DriverAndKeyConfigurator.configure(null)
         app = ApplicationProvider.getApplicationContext()
         lifecycle = LifecycleRegistry(this).apply {
             setCurrentState(Lifecycle.State.CREATED)
@@ -86,9 +90,13 @@ class AndroidEntityHandleManagerTest : LifecycleOwner {
         handleHolder = AbstractTestParticle.Handles()
 
         handleManager = EntityHandleManager(
-            AndroidHandleManager(
-                lifecycle = lifecycle,
+            "testArc",
+            "testHost",
+            TimeImpl(),
+            StoreManager(),
+            ServiceStoreFactory(
                 context = app,
+                lifecycle = lifecycle,
                 connectionFactory = TestConnectionFactory(app)
             )
         )

@@ -16,7 +16,6 @@ import arcs.core.data.RawEntity
 import arcs.core.data.Schema
 import arcs.core.storage.Reference
 import arcs.core.storage.StorageKey
-import arcs.core.type.Type
 import kotlin.reflect.KClass
 
 /**
@@ -47,8 +46,8 @@ interface Database {
     /** Removes everything associated with the given [storageKey] from the database. */
     suspend fun delete(storageKey: StorageKey, originatingClientId: Int? = null)
 
-    /** Returns all storage keys stored in this database. */
-    suspend fun getAllStorageKeys(): Map<StorageKey, Type>
+    /** Clears all expired entities, leaving only a tombstone with the version map. */
+    suspend fun removeExpiredEntities()
 
     /** Takes a snapshot of the current [DatabasePerformanceStatistics] for the database. */
     suspend fun snapshotStatistics(): DatabasePerformanceStatistics.Snapshot

@@ -8,13 +8,13 @@ licenses(["notice"])
 package(default_visibility = ["//visibility:public"])
 
 arcs_kt_library(
-    name = "ttl",
-    srcs = glob(["*.kt"]),
+    name = "analysis",
+    srcs = glob(
+        ["*.kt"],
+    ),
     deps = [
-        "//java/arcs/core/common",
         "//java/arcs/core/data",
-        "//java/arcs/core/storage/handle",
+        "//java/arcs/core/type",
         "//java/arcs/core/util",
-        "//third_party/kotlin/kotlinx_coroutines",
     ],
 )
