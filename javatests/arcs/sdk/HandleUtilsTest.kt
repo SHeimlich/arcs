@@ -67,7 +67,7 @@ class HandleUtilsTest {
         val cFoo = manager.createSingletonHandle(
             HandleMode.ReadWrite,
             READ_WRITE_HANDLE,
-            cFoo,
+            CFoo,
             STORAGE_KEY_TWO
         ) as ReadWriteSingletonHandle<CFoo>
 
