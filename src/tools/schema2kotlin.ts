@@ -404,74 +404,74 @@ class ${name}(`;
 
     return `\
 
-${classDef}${constructorArguments}${classInterface}
+    ${classDef}${constructorArguments}${classInterface}
 
-    ${withFields(`${this.fieldVals.join('\n    ')}`)}
+        ${withFields(`${this.fieldVals.join('\n    ')}`)}
 
-    ${this.opts.wasm ? `override var entityId = ""` : withFields(`init {
-        ${this.fieldInitializers.join('\n        ')}
-    }`)}
+        ${this.opts.wasm ? `override var entityId = ""` : withFields(`init {
+            ${this.fieldInitializers.join('\n        ')}
+        }`)}
 
-    fun copy(${ktUtils.joinWithIndents(this.fieldsForCopyDecl, 14, 2)}) = ${name}(${ktUtils.joinWithIndents(this.fieldsForCopy, 8+name.length, 2)})
+        fun copy(${ktUtils.joinWithIndents(this.fieldsForCopyDecl, 14, 3)}) = ${name}(${ktUtils.joinWithIndents(this.fieldsForCopy, 8+name.length, 2)})
 
-${this.opts.wasm ? `
-    fun reset() {
-      ${withFields(`${this.fieldsReset.join('\n        ')}`)}
-    }
+    ${this.opts.wasm ? `
+        fun reset() {
+            ${withFields(`${this.fieldsReset.join('\n            ')}`)}
+        }
 
-    override fun encodeEntity(): NullTermByteArray {
-        val encoder = StringEncoder()
-        encoder.encode("", entityId)
-        ${this.encode.join('\n        ')}
-        return encoder.toNullTermByteArray()
-    }
+        override fun encodeEntity(): NullTermByteArray {
+            val encoder = StringEncoder()
+            encoder.encode("", entityId)
+            ${this.encode.join('\n        ')}
+            return encoder.toNullTermByteArray()
+        }
 
-    override fun toString() =
-        "${name}(${this.fieldsForToString.join(', ')})"
-` : ''}
-    companion object : ${this.prefixTypeForRuntime('EntitySpec')}<${name}> {
-        ${this.opts.wasm ? '' : `
-        override val SCHEMA = ${leftPad(this.createSchema(schemaHash), 8, true)}
+        override fun toString() =
+            "${name}(${this.fieldsForToString.join(', ')})"
+    ` : ''}
+        companion object : ${this.prefixTypeForRuntime('EntitySpec')}<${name}> {
+            ${this.opts.wasm ? '' : `
+            override val SCHEMA = ${leftPad(this.createSchema(schemaHash), 12, true)}
 
-        init {
-            SchemaRegistry.register(this)
-        }`}
-        ${!this.opts.wasm ? `
-        override fun deserialize(data: RawEntity) = ${name}().apply { deserialize(data) }` : `
-        override fun decode(encoded: ByteArray): ${name}? {
-            if (encoded.isEmpty()) return null
+            init {
+                SchemaRegistry.register(this)
+            }`}
+            ${!this.opts.wasm ? `
+            override fun deserialize(data: RawEntity) = ${name}().apply { deserialize(data) }` : `
+            override fun decode(encoded: ByteArray): ${name}? {
+                if (encoded.isEmpty()) return null
 
-            val decoder = StringDecoder(encoded)
-            val entityId = decoder.decodeText()
-            decoder.validate("|")
-            ${withFields(`
-            ${this.setFieldsToDefaults.join('\n            ')}
-            var i = 0
-            while (i < ${fieldCount} && !decoder.done()) {
-                val _name = decoder.upTo(':').toUtf8String()
-                when (_name) {
-                    ${this.decode.join('\n                    ')}
-                    else -> {
-                        // Ignore unknown fields until type slicing is fully implemented.
-                        when (decoder.chomp(1).toUtf8String()) {
-                            "T", "U" -> decoder.decodeText()
-                            "N" -> decoder.decodeNum()
-                            "B" -> decoder.decodeBool()
-                        }
-                        i--
-                    }
-                }
+                val decoder = StringDecoder(encoded)
+                val entityId = decoder.decodeText()
                 decoder.validate("|")
-                i++
-            }`)}
-            val _rtn = ${name}().copy(
-                ${ktUtils.joinWithIndents(this.fieldsForCopy, 33, 3)}
-            )
-            _rtn.entityId = entityId
-            return _rtn
-        }`}
-    }
-}`;
+                ${withFields(`
+                ${this.setFieldsToDefaults.join('\n            ')}
+                var i = 0
+                while (i < ${fieldCount} && !decoder.done()) {
+                    val _name = decoder.upTo(':').toUtf8String()
+                    when (_name) {
+                        ${this.decode.join('\n                    ')}
+                        else -> {
+                            // Ignore unknown fields until type slicing is fully implemented.
+                            when (decoder.chomp(1).toUtf8String()) {
+                                "T", "U" -> decoder.decodeText()
+                                "N" -> decoder.decodeNum()
+                                "B" -> decoder.decodeBool()
+                            }
+                            i--
+                        }
+                    }
+                    decoder.validate("|")
+                    i++
+                }`)}
+                val _rtn = ${name}().copy(
+                    ${ktUtils.joinWithIndents(this.fieldsForCopy, 33, 3)}
+                )
+               _rtn.entityId = entityId
+                return _rtn
+            }`}
+        }
+    }`;
   }
 
   private prefixTypeForRuntime(type: string): string {
