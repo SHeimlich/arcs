@@ -27,9 +27,9 @@ abstract class AbstractGold : BaseParticle() {
 
 
     @Suppress("UNCHECKED_CAST")
-class GoldInternal1(
-    val_: String = ""
-) : EntityBase("GoldInternal1", SCHEMA) {
+    class GoldInternal1(
+        val_: String = ""
+    ) : EntityBase("GoldInternal1", SCHEMA) {
 
         var val_: String
         get() = super.getSingletonValue("val") as String? ?: ""
@@ -64,35 +64,35 @@ class GoldInternal1(
     }
 
     @Suppress("UNCHECKED_CAST")
-class Gold_AllPeople(
-    name: String = "",
-    age: Double = 0.0,
-    lastCall: Double = 0.0,
-    address: String = "",
-    favoriteColor: String = "",
-    birthDayMonth: Double = 0.0,
-    birthDayDOM: Double = 0.0
-) : EntityBase("Gold_AllPeople", SCHEMA) {
+    class Gold_AllPeople(
+        name: String = "",
+        age: Double = 0.0,
+        lastCall: Double = 0.0,
+        address: String = "",
+        favoriteColor: String = "",
+        birthDayMonth: Double = 0.0,
+        birthDayDOM: Double = 0.0
+    ) : EntityBase("Gold_AllPeople", SCHEMA) {
 
         var name: String
         get() = super.getSingletonValue("name") as String? ?: ""
         private set(_value) = super.setSingletonValue("name", _value)
-    var age: Double
+        var age: Double
         get() = super.getSingletonValue("age") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("age", _value)
-    var lastCall: Double
+        var lastCall: Double
         get() = super.getSingletonValue("lastCall") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("lastCall", _value)
-    var address: String
+        var address: String
         get() = super.getSingletonValue("address") as String? ?: ""
         private set(_value) = super.setSingletonValue("address", _value)
-    var favoriteColor: String
+        var favoriteColor: String
         get() = super.getSingletonValue("favoriteColor") as String? ?: ""
         private set(_value) = super.setSingletonValue("favoriteColor", _value)
-    var birthDayMonth: Double
+        var birthDayMonth: Double
         get() = super.getSingletonValue("birthDayMonth") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("birthDayMonth", _value)
-    var birthDayDOM: Double
+        var birthDayDOM: Double
         get() = super.getSingletonValue("birthDayDOM") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("birthDayDOM", _value)
 
@@ -155,35 +155,35 @@ class Gold_AllPeople(
     }
 
     @Suppress("UNCHECKED_CAST")
-class Gold_QCollection(
-    name: String = "",
-    age: Double = 0.0,
-    lastCall: Double = 0.0,
-    address: String = "",
-    favoriteColor: String = "",
-    birthDayMonth: Double = 0.0,
-    birthDayDOM: Double = 0.0
-) : EntityBase("Gold_QCollection", SCHEMA) {
+    class Gold_QCollection(
+        name: String = "",
+        age: Double = 0.0,
+        lastCall: Double = 0.0,
+        address: String = "",
+        favoriteColor: String = "",
+        birthDayMonth: Double = 0.0,
+        birthDayDOM: Double = 0.0
+    ) : EntityBase("Gold_QCollection", SCHEMA) {
 
         var name: String
         get() = super.getSingletonValue("name") as String? ?: ""
         private set(_value) = super.setSingletonValue("name", _value)
-    var age: Double
+        var age: Double
         get() = super.getSingletonValue("age") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("age", _value)
-    var lastCall: Double
+        var lastCall: Double
         get() = super.getSingletonValue("lastCall") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("lastCall", _value)
-    var address: String
+        var address: String
         get() = super.getSingletonValue("address") as String? ?: ""
         private set(_value) = super.setSingletonValue("address", _value)
-    var favoriteColor: String
+        var favoriteColor: String
         get() = super.getSingletonValue("favoriteColor") as String? ?: ""
         private set(_value) = super.setSingletonValue("favoriteColor", _value)
-    var birthDayMonth: Double
+        var birthDayMonth: Double
         get() = super.getSingletonValue("birthDayMonth") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("birthDayMonth", _value)
-    var birthDayDOM: Double
+        var birthDayDOM: Double
         get() = super.getSingletonValue("birthDayDOM") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("birthDayDOM", _value)
 
@@ -251,9 +251,9 @@ class Gold_QCollection(
     }
 
     @Suppress("UNCHECKED_CAST")
-class Gold_Collection(
-    num: Double = 0.0
-) : EntityBase("Gold_Collection", SCHEMA) {
+    class Gold_Collection(
+        num: Double = 0.0
+    ) : EntityBase("Gold_Collection", SCHEMA) {
 
         var num: Double
         get() = super.getSingletonValue("num") as Double? ?: 0.0
@@ -288,27 +288,27 @@ class Gold_Collection(
     }
 
     @Suppress("UNCHECKED_CAST")
-class Gold_Data(
-    num: Double = 0.0,
-    txt: String = "",
-    lnk: String = "",
-    flg: Boolean = false,
-    ref: Reference<GoldInternal1>? = null
-) : EntityBase("Gold_Data", SCHEMA) {
+    class Gold_Data(
+        num: Double = 0.0,
+        txt: String = "",
+        lnk: String = "",
+        flg: Boolean = false,
+        ref: Reference<GoldInternal1>? = null
+    ) : EntityBase("Gold_Data", SCHEMA) {
 
         var num: Double
         get() = super.getSingletonValue("num") as Double? ?: 0.0
         private set(_value) = super.setSingletonValue("num", _value)
-    var txt: String
+        var txt: String
         get() = super.getSingletonValue("txt") as String? ?: ""
         private set(_value) = super.setSingletonValue("txt", _value)
-    var lnk: String
+        var lnk: String
         get() = super.getSingletonValue("lnk") as String? ?: ""
         private set(_value) = super.setSingletonValue("lnk", _value)
-    var flg: Boolean
+        var flg: Boolean
         get() = super.getSingletonValue("flg") as Boolean? ?: false
         private set(_value) = super.setSingletonValue("flg", _value)
-    var ref: Reference<GoldInternal1>?
+        var ref: Reference<GoldInternal1>?
         get() = super.getSingletonValue("ref") as Reference<GoldInternal1>?
         private set(_value) = super.setSingletonValue("ref", _value)
 
