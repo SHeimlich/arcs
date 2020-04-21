@@ -246,11 +246,12 @@ ${imports.join('\n')}
 
     const nodes = nodeGenerators.map(ng => ng.node);
     for (const connection of particle.connections) {
-      const handleName = connection.name[0].toUpperCase() + connection.name.slice(1);
+      const handleName = connection.name;
+      const capitalHandleName = connection.name[0].toUpperCase() + connection.name.slice(1);
       const ng = nodeGenerators.find(generator => {
         const kg = <KotlinGenerator>generator.generator;
-        console.log(`does ${kg.node.connections} include ${handleName}`)
-        return kg.node.connections.includes(handleName);
+        console.log(`does ${kg.node.connections} include ${capitalHandleName}`)
+        return kg.node.connections.includes(capitalHandleName);
       });
       let entityType = entityTypeName(particle.name, connection.name);
       //const entityType = generator.node.name; //entityTypeName(particle.name, connection.name);
