@@ -44,6 +44,21 @@ export class SchemaNode {
   ) {}
 
   readonly sources: SchemaSource[] = [];
+  schema: Schema;
+
+  // The name and aliases are determined by callbacks provided by the kotlin
+  // and C++ implementations. This is done as we transition Kotlin to
+  // improved naming conventions. If this schema is only found once,
+  // name is of the form 'Particle_Handle'. Otherwise, name is of the form
+  // 'ParticleInternal#' In C++ aliases will be empty if there is only
+  // one instance of the schema. If there are multiple instances of the schema
+  // in C++ (or all cases in kotlin), aliases lists the 'Particle_Handle'
+  // names that need to be type aliased to it.
+  name: string;
+  aliases: string[] = [];
+  particleName: string;
+  connections: string[] = [];
+  uniqueSchemaName: boolean;
 
   // All schemas that can be sliced to this one.
   descendants = new Set<SchemaNode>();
@@ -72,6 +87,12 @@ export class SchemaNode {
   static entityTypeForConnection(connection: HandleConnectionSpec, nodes: SchemaNode[]): string {
     const allSources = nodes.map(n => n.sources).reduce((curr, acc) => [...acc, ...curr], []);
     return allSources.find(s => s.connection === connection && s.path.length === 0).fullName;
+
+  constructor(schema: Schema, particleName: string, connectionName: string) {
+    this.schema = schema;
+    this.connections.push(connectionName);
+    this.particleName = particleName;
+    this.uniqueSchemaName = true;
   }
 }
 
@@ -123,6 +144,15 @@ export class SchemaGraph {
             b.parents = [];        // non-null to indicate this has parents; will be filled later
           }
         }
+      }
+
+      let sameSchema = this.nodes.find(n => schema.name == n.schema.name);
+      console.log(`${node.connections} has schema ${schema.name}`)
+      if (sameSchema) {
+        //console.log(`same schema for ${sameSchema.connections} and ${node.connections}`)
+        console.log(`Schema: ${schema.name}`)
+        node.uniqueSchemaName = false;
+        sameSchema.uniqueSchemaName = false;
       }
 
       this.nodes.push(node);
