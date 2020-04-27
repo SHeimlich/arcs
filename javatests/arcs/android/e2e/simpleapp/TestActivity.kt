@@ -25,6 +25,8 @@ import arcs.core.data.HandleMode
 import arcs.core.entity.HandleContainerType
 import arcs.core.entity.HandleSpec
 import arcs.core.host.EntityHandleManager
+import arcs.core.storage.keys.RamDiskStorageKey
+import arcs.core.storage.referencemode.ReferenceModeStorageKey
 import arcs.core.util.Scheduler
 import arcs.jvm.util.JvmTime
 import arcs.sdk.ReadWriteCollectionHandle
@@ -52,7 +54,7 @@ class TestActivity : AppCompatActivity() {
     //private var storageMode = TestEntity.StorageMode.IN_MEMORY
     private var isCollection = false
     private var setFromRemoteService = false
-    //private var singletonHandle: ReadWriteSingletonHandle<TestEntity>? = null
+    private var singletonHandle: ReadWriteSingletonHandle<WritePerson_Person>? = null
     //private var collectionHandle: ReadWriteCollectionHandle<TestEntity>? = null
 
     private var allocator: Allocator? = null
@@ -64,5 +66,66 @@ class TestActivity : AppCompatActivity() {
         setContentView(R.layout.test_activity)
         resultView1 = findViewById<Button>(R.id.result1)
         resultView1.text = "Hello, world"
+        scope.launch { testReadWriteArc() }
+        scope.launch {
+            fetchAndAppend()
+        }
+
+    }
+
+    private suspend fun fetchAndAppend() {
+        createHandle()
+        resultView1.text = "singletonhandle: ${singletonHandle?.name}"
+    }
+
+    private suspend fun createHandle() {
+        val handleManager = EntityHandleManager(
+            time = JvmTime,
+            scheduler = Scheduler(
+                JvmTime,
+                coroutineContext
+                    + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+            ),
+            activationFactory = ServiceStoreFactory(
+                this,
+                lifecycle
+            )
+        )
+        singletonHandle = handleManager.createHandle(
+            HandleSpec(
+                "singletonHandle",
+                HandleMode.Write,
+                HandleContainerType.Singleton,
+                WritePerson_Person
+            ),
+            ReferenceModeStorageKey(
+                backingKey = RamDiskStorageKey("singleton_reference"),
+                storageKey = RamDiskStorageKey("singleton")
+            )
+        ) as ReadWriteSingletonHandle<WritePerson_Person>
+    }
+
+    private suspend fun testReadWriteArc() {
+        allocator = Allocator.create(
+            AndroidManifestHostRegistry.create(this@TestActivity),
+            EntityHandleManager(
+                time = JvmTime,
+                scheduler = Scheduler(
+                    JvmTime,
+                    coroutineContext
+                        + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+                ),
+                activationFactory = ServiceStoreFactory(
+                    context = this@TestActivity,
+                    lifecycle = this@TestActivity.lifecycle
+                )
+            )
+        )
+        val arcId = allocator?.startArcForPlan("Person", PersonRecipePlan)
+        arcId?.let { allocator?.stopArc(it) }
+    }
+
+    companion object {
+        const val RESULT_NAME = "result"
     }
 }

@@ -36,6 +36,15 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+    <service
+      android:name=".SimpleAppService"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="arcs.android.host.ARC_HOST"/>
+      </intent-filter>
+    </service>
+
   </application>
 
 </manifest>

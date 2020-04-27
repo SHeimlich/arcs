@@ -39,7 +39,7 @@ class TestApplication : Application(), Configuration.Provider {
 
         DriverAndKeyConfigurator.configureKeyParsers()
 
-//        DatabaseStorageKey.registerParser()
+        DatabaseStorageKey.registerParser()
 //        DatabaseDriverProvider.configure(AndroidSqliteDatabaseManager(this)) {
 //           // TestEntity.SCHEMA
 //        }

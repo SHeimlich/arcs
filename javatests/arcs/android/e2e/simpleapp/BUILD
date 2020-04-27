@@ -9,6 +9,11 @@ licenses(["notice"])
 
 package(default_visibility = ["//visibility:public"])
 
+arcs_kt_gen(
+    name = "person_arcs",
+    srcs = ["simpleApp.arcs"],
+)
+
 arcs_kt_android_library(
     name = "test_app_lib",
     testonly = 1,
@@ -16,6 +21,7 @@ arcs_kt_android_library(
     manifest = ":AndroidManifest.xml",
     resource_files = glob(["res/**/*"]),
     deps = [
+        ":person_arcs",
         "//java/arcs/android/host",
         "//java/arcs/android/sdk/host",
         "//java/arcs/android/storage/database",

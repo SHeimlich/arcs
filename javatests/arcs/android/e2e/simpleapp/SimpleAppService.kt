@@ -9,7 +9,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-package arcs.android.e2e.testapp
+package arcs.android.e2e.simpleapp
 
 import android.content.Context
 import android.content.Intent
@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 /**
  * Service which wraps an ArcHost containing person.arcs related particles.
  */
-class PersonHostService : ArcHostService() {
+class SimpleAppService : ArcHostService() {
 
     private val coroutineContext = Job() + Dispatchers.Main
 
@@ -39,7 +39,6 @@ class PersonHostService : ArcHostService() {
         this,
         this.lifecycle,
         JvmSchedulerProvider(coroutineContext),
-        ::ReadPerson.toRegistration(),
         ::WritePerson.toRegistration()
     )
 
@@ -59,20 +58,10 @@ class PersonHostService : ArcHostService() {
         }
     }
 
-    inner class ReadPerson : AbstractReadPerson() {
-
-        override suspend fun onHandleSync(handle: Handle, allSynced: Boolean) {
-            scope.launch {
-                val name = withContext(Dispatchers.IO) { handles.person.fetch()?.name ?: "boo" }
-                sendResult(name)
-            }
-        }
-    }
-
     inner class WritePerson : AbstractWritePerson() {
 
         override suspend fun onHandleSync(handle: Handle, allSynced: Boolean) {
-            handles.person.store(WritePerson_Person("John Wick"))
+            handles.person.store(WritePerson_Person("Sarah Heimlich"))
         }
     }
 
