@@ -5,7 +5,7 @@ schema Person
   name: Text
 
 particle WritePerson in 'arcs.android.e2e.simpleapp.SimpleAppService.WritePerson'
-  person: writes Person {name}
+  person: reads writes Person {name}
 
 @trigger
   launch startup
@@ -14,4 +14,4 @@ recipe PersonRecipe
   recipePerson: create
 
   WritePerson
-    person: writes recipePerson
+    person: reads writes recipePerson

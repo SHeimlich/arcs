@@ -13,12 +13,14 @@ package arcs.android.e2e.simpleapp
 
 import android.content.Context
 import android.content.Intent
+import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import arcs.android.sdk.host.AndroidHost
 import arcs.android.sdk.host.ArcHostService
 import arcs.core.data.Plan
 import arcs.core.host.ParticleRegistration
 import arcs.core.host.SchedulerProvider
+import arcs.core.host.toParticleIdentifier
 import arcs.core.host.toRegistration
 import arcs.jvm.host.JvmSchedulerProvider
 import arcs.jvm.util.JvmTime
@@ -59,6 +61,7 @@ class SimpleAppService : ArcHostService() {
     }
 
     inner class WritePerson : AbstractWritePerson() {
+
 
         override suspend fun onHandleSync(handle: Handle, allSynced: Boolean) {
             handles.person.store(WritePerson_Person("Sarah Heimlich"))

@@ -67,16 +67,16 @@ class TestActivity : AppCompatActivity() {
         resultView1 = findViewById<Button>(R.id.result1)
         resultView1.text = "Hello, world"
         scope.launch { testReadWriteArc() }
-        scope.launch {
-            fetchAndAppend()
-        }
+//        scope.launch {
+//            fetchAndAppend()
+//        }
 
     }
 
-    private suspend fun fetchAndAppend() {
-        createHandle()
-        resultView1.text = "singletonhandle: ${singletonHandle?.name}"
-    }
+    //private suspend fun fetchAndAppend() {
+    //    createHandle()
+    //    resultView1.text = "SingletonHandle: ${singletonHandle?.fetch()}"
+    //}
 
     private suspend fun createHandle() {
         val handleManager = EntityHandleManager(
@@ -94,7 +94,7 @@ class TestActivity : AppCompatActivity() {
         singletonHandle = handleManager.createHandle(
             HandleSpec(
                 "singletonHandle",
-                HandleMode.Write,
+                HandleMode.ReadWrite,
                 HandleContainerType.Singleton,
                 WritePerson_Person
             ),
@@ -122,6 +122,8 @@ class TestActivity : AppCompatActivity() {
             )
         )
         val arcId = allocator?.startArcForPlan("Person", PersonRecipePlan)
+        createHandle()
+        resultView1.text = "SingletonHandle: ${singletonHandle?.fetch()}"
         arcId?.let { allocator?.stopArc(it) }
     }
 
