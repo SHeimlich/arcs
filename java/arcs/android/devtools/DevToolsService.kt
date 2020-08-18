@@ -96,7 +96,7 @@ open class DevToolsService : Service() {
         val notification: Notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("Arcs DevTools")
             .setContentText("Connect a client to view Arcs developer tooling")
-            .setSmallIcon(R.drawable.notification_icon_background)
+            .setSmallIcon(R.drawable.devtools_icon)
             .build()
 
         startForeground(2, notification)
