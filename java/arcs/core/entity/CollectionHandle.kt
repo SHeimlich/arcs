@@ -45,7 +45,9 @@ class CollectionHandle<T : Storable, R : Referencable>(
   private val storageAdapter = config.storageAdapter
 
   init {
-    check(spec.containerType == HandleContainerType.Collection)
+    check(spec.containerType == HandleContainerType.Collection) {
+      "HandleContainerType of ${name} does not match Spec containerType."
+    }
   }
 
   // Filter out expired models.
